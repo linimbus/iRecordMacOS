@@ -266,6 +266,33 @@ irecord stop   --session <id> --json     # 等待完成/转换并返回最终结
 
 ## 从源码构建
 
+### 一键发布
+
+```bash
+./release.sh
+```
+
+脚本会自动完成：
+
+- 运行单元测试
+- Universal 2（arm64 + x86_64）构建
+- 签名 `.app`
+- 生成 `.app`、`.zip`、`.dmg`、独立 CLI
+- 生成 `SHA256SUMS.txt`
+- 校验签名、版本号、架构、DMG 内容与校验和
+
+常用选项：
+
+```bash
+./release.sh --open          # 完成后打开 dist 文件夹
+./release.sh --no-tests      # 跳过测试
+CODESIGN_IDENTITY="Developer ID Application: ..." ./release.sh
+```
+
+也可以使用 `make release` 调用同一脚本。
+
+### 手动构建
+
 ```bash
 git clone <repository> iRecordMacOS
 cd iRecordMacOS

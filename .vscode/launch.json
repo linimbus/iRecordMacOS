@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:iRecordMacOS}",
+            "name": "Debug iRecordApp",
+            "target": "iRecordApp",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug iRecordApp"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:iRecordMacOS}",
+            "name": "Release iRecordApp",
+            "target": "iRecordApp",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release iRecordApp"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:iRecordMacOS}",
+            "name": "Debug irecord",
+            "target": "irecord",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug irecord"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:iRecordMacOS}",
+            "name": "Release irecord",
+            "target": "irecord",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release irecord"
+        }
+    ]
+}
