@@ -76,6 +76,7 @@ ln -s /Applications dist/dmg-staging/Applications
 mkdir -p dist/dmg-staging/Documentation
 cp README.md README_en.md LICENSE dist/dmg-staging/Documentation/ 2>/dev/null || true
 cp -R skill dist/dmg-staging/Documentation/ 2>/dev/null || true
+cp -R docs dist/dmg-staging/Documentation/ 2>/dev/null || true
 mkdir -p dist/dmg-staging/CLI
 cp dist/irecord dist/dmg-staging/CLI/
 hdiutil create \

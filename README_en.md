@@ -46,6 +46,34 @@ iRecord is a lightweight screen recorder built entirely with Apple frameworks. I
 
 ---
 
+## Screenshots
+
+### Desktop control (idle)
+
+![Desktop control](docs/screenshots/desktop-control.png)
+
+Frosted-glass controller with a `00:00:00` timer, full-screen, window, region, and settings.
+
+### Recording
+
+![Recording HUD](docs/screenshots/recording-hud.png)
+
+Timer, five-cell gray audio level bar, pause and stop. The volume bar is unaffected by the control opacity setting.
+
+### Menu bar
+
+![Menu bar](docs/screenshots/menu-bar.png)
+
+Menu bar icon and menu: start recording, new recording, output format, audio source, settings, and quit.
+
+### Settings
+
+![Settings](docs/screenshots/settings.png)
+
+Settings → General → Appearance, including floating-control opacity.
+
+---
+
 ## Requirements
 
 - macOS **15.0** or later

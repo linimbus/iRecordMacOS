@@ -50,6 +50,34 @@ iRecord 是一个使用 macOS 系统框架构建的轻量录屏工具。启动�
 
 ---
 
+## 截图
+
+### 桌面控制条（空闲）
+
+![桌面控制条](docs/screenshots/desktop-control.png)
+
+毛玻璃控制条：`00:00:00` 计时、全屏、窗口、区域、设置。
+
+### 录制中
+
+![录制中控制条](docs/screenshots/recording-hud.png)
+
+录制中显示计时、五格灰色音量条、暂停和停止；音量条不受界面透明度影响。
+
+### 菜单栏
+
+![菜单栏菜单](docs/screenshots/menu-bar.png)
+
+菜单栏图标与菜单：开始录制、新建录制、输出格式、音频来源、设置和退出。
+
+### 设置
+
+![设置界面](docs/screenshots/settings.png)
+
+设置 → 通用 → 外观：悬浮控制条透明度。
+
+---
+
 ## 系统要求
 
 - macOS **15.0** 或更高版本
