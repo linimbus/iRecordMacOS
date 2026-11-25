@@ -9,6 +9,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
     private let state = AppState()
     private let recorder = ScreenRecorder()
     private let hotkeys = HotkeyManager()
+    private let recordingBorder = RecordingBorderController()
+    private var lastRecordingTarget: CaptureTarget?
 
     private var statusItem: NSStatusItem!
     private var headerItem: NSMenuItem?
@@ -44,12 +46,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
         setupLauncher()
         updateLauncherVisibility()
         updateStatusIcon()
-
     }
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         switch recorder.state {
         case .recording, .paused:
+            recordingBorder.hide()
             Task { @MainActor in
                 _ = try? await recorder.stop()
                 NSApp.reply(toApplicationShouldTerminate: true)
@@ -68,6 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
 
     func applicationWillTerminate(_ notification: Notification) {
         timer?.invalidate()
+        recordingBorder.hide()
         hotkeys.unregisterAll()
     }
 
@@ -574,18 +577,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
             // writer reported no audio track (the meter then simply stays empty).
             state.recordingHasAudio = info.hasAudio || settings.videoOptions.wantsAudio
             state.audioMeter.reset()
+            lastRecordingTarget = target
+            if state.settings.showRecordingBorder {
+                showRecordingBorder(for: target)
+            }
             startTimer()
             updateMenu()
             updateStatusIcon()
         } catch {
             state.recordingHasAudio = false
             state.audioMeter.reset()
+            lastRecordingTarget = nil
+            recordingBorder.hide()
             presentError(error)
         }
     }
 
+    private func showRecordingBorder(for target: CaptureTarget) {
+        let color = NSColor(hex: state.settings.recordingBorderColorHex) ?? .systemRed
+        recordingBorder.show(target: target, color: color)
+    }
+
     private func stopRecording() {
         guard recorder.state == .recording || recorder.state == .paused else { return }
+        recordingBorder.hide()
         Task { @MainActor in
             do {
                 let result = try await recorder.stop()
@@ -635,8 +650,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
             state.startedAt = startedAt
             startTimer()
         }
+        if newState == .recording, previous != .paused {
+            // Reveal the floating launcher even when the user hid it, so the
+            // recording controls are immediately available. Hiding it again
+            // during the recording is still allowed.
+            launcher?.orderFrontRegardless()
+        }
         if newState != .recording {
             state.audioMeter.reset()
+        }
+        if newState == .finishing || newState == .converting || newState == .idle {
+            recordingBorder.hide()
         }
         if newState == .idle {
             stopTimer()
@@ -646,6 +670,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
             state.elapsed = 0
             state.modeLabel = ""
             state.recordingHasAudio = false
+            lastRecordingTarget = nil
+            // Restore the user's hidden-launcher preference after recording.
+            updateLauncherVisibility()
         }
         updateStatusIcon()
         updateMenu()
@@ -709,6 +736,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
         }
         if old.launcherOpacity != new.launcherOpacity {
             launcherEffectView?.alphaValue = CGFloat(new.launcherOpacity)
+        }
+        if old.recordingBorderColorHex != new.recordingBorderColorHex {
+            recordingBorder.updateColor(NSColor(hex: new.recordingBorderColorHex) ?? .systemRed)
+        }
+        if old.showRecordingBorder != new.showRecordingBorder {
+            if new.showRecordingBorder,
+               let target = lastRecordingTarget,
+               recorder.state == .recording || recorder.state == .paused {
+                showRecordingBorder(for: target)
+            } else if !new.showRecordingBorder {
+                recordingBorder.hide()
+            }
         }
         if old.launchAtLogin != new.launchAtLogin {
             applyLoginItem(new.launchAtLogin)
@@ -788,12 +827,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUs
     }
 
     @objc private func showAbout() {
+        let repositoryURL = URL(string: "https://github.com/linimbus/irecordmacos")!
         let alert = NSAlert()
         alert.messageText = "iRecord \(AppInfo.version)"
-        alert.informativeText = L10n.t("app.tagline") + "\n\n" + L10n.t("settings.aboutText")
+        alert.informativeText = L10n.t("app.tagline") + "\n\n" + L10n.t("settings.aboutText") + "\n\n" + repositoryURL.absoluteString
         alert.addButton(withTitle: L10n.t("common.ok"))
+        alert.addButton(withTitle: "GitHub")
         alert.icon = NSApp.applicationIconImage
-        alert.runModal()
+        if alert.runModal() == .alertSecondButtonReturn {
+            NSWorkspace.shared.open(repositoryURL)
+        }
     }
 
     // MARK: - Alerts

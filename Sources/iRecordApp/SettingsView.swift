@@ -5,6 +5,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var state: AppState
     @State private var tab: Tab = .general
+    private let projectURL = URL(string: "https://github.com/linimbus/irecordmacos")!
 
     enum Tab: String, CaseIterable, Identifiable {
         case general, video, audio, shortcuts, language, about
@@ -168,6 +169,21 @@ struct SettingsView: View {
                     }
                 }
                 Text(L10n.t("settings.launcherOpacityNote"))
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                toggleRow(L10n.t("settings.recordingBorder"), isOn: $state.settings.showRecordingBorder)
+
+                SettingRow(title: L10n.t("settings.recordingBorderColor")) {
+                    HStack(spacing: 7) {
+                        ForEach(RecordingBorderPalette.colors) { option in
+                            borderColorButton(option)
+                        }
+                    }
+                }
+
+                Text(L10n.t("settings.recordingBorderNote"))
                     .font(.system(size: 10.5))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -450,6 +466,19 @@ struct SettingsView: View {
                 Text("MP4 · MOV · ProRes · GIF")
                     .font(.system(size: 10.5, design: .monospaced))
                     .foregroundStyle(.tertiary)
+                Divider().opacity(0.5)
+                Link(destination: projectURL) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "link")
+                        Text("github.com/linimbus/irecordmacos")
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                    }
+                    .font(.system(size: 11, weight: .medium))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.accentColor)
             }
         }
     }
@@ -470,6 +499,33 @@ struct SettingsView: View {
         }
         .toggleStyle(.switch)
         .controlSize(.small)
+    }
+
+    private func borderColorButton(_ option: RecordingBorderColorOption) -> some View {
+        let selected = state.settings.recordingBorderColorHex.uppercased() == option.hex
+        let isLight = option.hex == "#FFFFFF" || option.hex == "#FFCC00"
+        return Button {
+            state.settings.recordingBorderColorHex = option.hex
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(Color(nsColor: NSColor(hex: option.hex) ?? .systemRed))
+                Circle()
+                    .strokeBorder(
+                        selected ? Color.accentColor : Color.white.opacity(0.25),
+                        lineWidth: selected ? 2 : 1
+                    )
+                if selected {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(isLight ? Color.black : Color.white)
+                }
+            }
+            .frame(width: 17, height: 17)
+            .frame(width: 20, height: 20)
+            .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
     }
 
     private func section<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {

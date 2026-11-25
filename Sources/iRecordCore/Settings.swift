@@ -199,6 +199,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var gifFPS: Int
     public var showFloatingButton: Bool
     public var launcherOpacity: Double
+    public var showRecordingBorder: Bool
+    public var recordingBorderColorHex: String
     public var launchAtLogin: Bool
     public var revealWhenDone: Bool
     public var playSoundWhenDone: Bool
@@ -220,6 +222,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         gifFPS: 12,
         showFloatingButton: true,
         launcherOpacity: 1.0,
+        showRecordingBorder: true,
+        recordingBorderColorHex: "#FF3B30",
         launchAtLogin: false,
         revealWhenDone: false,
         playSoundWhenDone: true,
@@ -242,6 +246,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         gifFPS: Int,
         showFloatingButton: Bool,
         launcherOpacity: Double,
+        showRecordingBorder: Bool,
+        recordingBorderColorHex: String,
         launchAtLogin: Bool,
         revealWhenDone: Bool,
         playSoundWhenDone: Bool,
@@ -262,6 +268,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         self.gifFPS = gifFPS
         self.showFloatingButton = showFloatingButton
         self.launcherOpacity = launcherOpacity
+        self.showRecordingBorder = showRecordingBorder
+        self.recordingBorderColorHex = recordingBorderColorHex
         self.launchAtLogin = launchAtLogin
         self.revealWhenDone = revealWhenDone
         self.playSoundWhenDone = playSoundWhenDone
@@ -286,6 +294,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         gifFPS = try c.decodeIfPresent(Int.self, forKey: .gifFPS) ?? d.gifFPS
         showFloatingButton = try c.decodeIfPresent(Bool.self, forKey: .showFloatingButton) ?? d.showFloatingButton
         launcherOpacity = try c.decodeIfPresent(Double.self, forKey: .launcherOpacity) ?? d.launcherOpacity
+        showRecordingBorder = try c.decodeIfPresent(Bool.self, forKey: .showRecordingBorder) ?? d.showRecordingBorder
+        recordingBorderColorHex = try c.decodeIfPresent(String.self, forKey: .recordingBorderColorHex) ?? d.recordingBorderColorHex
         launchAtLogin = try c.decodeIfPresent(Bool.self, forKey: .launchAtLogin) ?? d.launchAtLogin
         revealWhenDone = try c.decodeIfPresent(Bool.self, forKey: .revealWhenDone) ?? d.revealWhenDone
         playSoundWhenDone = try c.decodeIfPresent(Bool.self, forKey: .playSoundWhenDone) ?? d.playSoundWhenDone
@@ -304,6 +314,12 @@ public struct AppSettings: Codable, Equatable, Sendable {
         if gifFPS > 30 { gifFPS = 30 }
         if !launcherOpacity.isFinite || launcherOpacity < 0.3 { launcherOpacity = 0.3 }
         if launcherOpacity > 1.0 { launcherOpacity = 1.0 }
+        let borderColor = recordingBorderColorHex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if borderColor.count == 7, borderColor.hasPrefix("#"), UInt32(borderColor.dropFirst(), radix: 16) != nil {
+            recordingBorderColorHex = borderColor
+        } else {
+            recordingBorderColorHex = "#FF3B30"
+        }
         if outputDirectory.trimmingCharacters(in: .whitespaces).isEmpty {
             outputDirectory = AppPaths.defaultOutputDirectory.path
         }

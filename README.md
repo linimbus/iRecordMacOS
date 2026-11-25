@@ -1,8 +1,8 @@
 # iRecord · macOS 原生极简录屏
 
-> **v1.0.0** · 菜单栏 / 右下角悬浮按钮 · 全屏 / 窗口 / 区域录制 · 系统音频与麦克风 · MP4 / MOV / ProRes / GIF · 无头 CLI
+> **v1.1.0** · 菜单栏 / 右下角悬浮按钮 · 全屏 / 窗口 / 区域录制 · 系统音频与麦克风 · MP4 / MOV / ProRes / GIF · 无头 CLI
 
-[English README](README_en.md) · [无头模式 Skill](skill/irecord-headless/SKILL.md)
+[English README](README_en.md) · [无头模式 Skill](skill/irecord-headless/SKILL.md) · [GitHub 项目](https://github.com/linimbus/irecordmacos)
 
 iRecord 是一个使用 macOS 系统框架构建的轻量录屏工具。启动后没有 Dock 图标，只在菜单栏右上角和屏幕右下角提供一个紧凑的控制入口。它基于 ScreenCaptureKit 录制画面与系统声音，使用 AVFoundation 编码视频，使用 ImageIO 生成 GIF，不依赖 FFmpeg 或任何第三方库，也不包含遥测与联网行为。
 
@@ -28,6 +28,11 @@ iRecord 是一个使用 macOS 系统框架构建的轻量录屏工具。启动�
 - **鼠标**
   - 可显示或隐藏鼠标指针
   - 可开启 **鼠标点击高亮**：由系统在每个点击位置绘制圆形高亮，并直接写入视频
+- **录制区域边框**
+  - 全屏或区域录制时，在屏幕上显示所选颜色的边框
+  - 停止录制立即消失
+  - 边框只显示在屏幕上，**不会写入录像**
+  - 颜色可在设置中选择：红、橙、黄、绿、蓝、紫、白
 - **多种输出格式**
   - MP4 · H.264
   - MP4 · HEVC
@@ -64,6 +69,18 @@ iRecord 是一个使用 macOS 系统框架构建的轻量录屏工具。启动�
 
 录制中显示计时、五格灰色音量条、暂停和停止；音量条不受界面透明度影响。
 
+### 录制区域边框
+
+![录制区域边框](docs/screenshots/recording-border.png)
+
+区域录制时在屏幕上显示边框，停止后立即消失，不写入视频。
+
+### 全屏录制边框
+
+![全屏录制边框](docs/screenshots/recording-border-full.png)
+
+全屏录制同样显示边框；颜色可在设置 → 通用 → 外观中选择。
+
 ### 菜单栏
 
 ![菜单栏菜单](docs/screenshots/menu-bar.png)
@@ -74,7 +91,13 @@ iRecord 是一个使用 macOS 系统框架构建的轻量录屏工具。启动�
 
 ![设置界面](docs/screenshots/settings.png)
 
-设置 → 通用 → 外观：悬浮控制条透明度。
+设置 → 通用 → 外观：悬浮控制条透明度、录制区域边框开关与颜色。
+
+### 关于
+
+![关于界面](docs/screenshots/about.png)
+
+设置 → 关于：版本号与 [GitHub 项目链接](https://github.com/linimbus/irecordmacos)。
 
 ---
 
@@ -91,7 +114,7 @@ iRecord 是一个使用 macOS 系统框架构建的轻量录屏工具。启动�
 
 ### 使用发布包
 
-1. 打开 `dist/iRecord-1.0.0-macOS.dmg`，把 **iRecord.app** 拖入“应用程序”。
+1. 打开 `dist/iRecord-1.1.0-macOS.dmg`，把 **iRecord.app** 拖入“应用程序”。
 2. 由于发布包使用 ad-hoc 签名，首次打开需要：
    - 在 Finder 中右键点击 iRecord.app → **打开**，或
    - 执行 `xattr -dr com.apple.quarantine /Applications/iRecord.app`
@@ -134,6 +157,8 @@ irecord help --json
 - 菜单栏图标 → **新建录制** → 全屏 / 窗口 / 区域
 - 快捷键 `⌥⌘R`：开始/停止全屏录制
 
+如果悬浮条处于隐藏状态，开始录制时会自动显示，录制结束后恢复隐藏。
+
 ### 录制过程中
 
 - 悬浮条自动切换为：录制计时、暂停/恢复按钮、停止按钮
@@ -175,7 +200,7 @@ irecord help --json
 
 设置窗口是固定尺寸的紧凑布局，包含：
 
-- **通用**：保存目录、默认格式、帧率、画质、悬浮条、悬浮条透明度、登录时启动、完成后在 Finder 显示、完成提示音
+- **通用**：保存目录、默认格式、帧率、画质、悬浮条、悬浮条透明度、录制区域边框开关与颜色、登录时启动、完成后在 Finder 显示、完成提示音
 - **视频**：格式、缩放（100% / 75% / 50%）、帧率、画质、GIF 宽度/帧率、鼠标指针、鼠标点击高亮
 - **音频**：无音频 / 系统声音 / 麦克风 / 系统声音 + 麦克风，麦克风权限快捷入口
 - **快捷键**：点击快捷键框后按下新组合；检测重复；一键恢复默认
@@ -230,7 +255,7 @@ irecord stop   --session <id> --json     # 等待完成/转换并返回最终结
 | `irecord start [options]` | 启动后台会话，立即返回 session id |
 | `irecord pause/resume/stop/status` | 控制后台会话 |
 | `irecord config [--json]` | 查看与图形界面共享的设置 |
-| `irecord version` | 输出 `iRecord 1.0.0` |
+| `irecord version` | 输出 `iRecord 1.1.0` |
 
 ### JSON 输出示例
 
@@ -335,8 +360,8 @@ open dist/iRecord.app
 
 - `dist/iRecord.app` — 应用本体（内置 CLI 于 `Contents/Helpers/irecord`）
 - `dist/irecord` — 独立 CLI
-- `dist/iRecord-1.0.0-macOS.zip` — 便携压缩包
-- `dist/iRecord-1.0.0-macOS.dmg` — 安装镜像（含 README、LICENSE、Skill、Applications 快捷方式和独立 `CLI/irecord`）
+- `dist/iRecord-1.1.0-macOS.zip` — 便携压缩包
+- `dist/iRecord-1.1.0-macOS.dmg` — 安装镜像（含 README、LICENSE、Skill、Applications 快捷方式和独立 `CLI/irecord`）
 - `dist/SHA256SUMS.txt` — 校验和
 
 如需再签名/公证：
@@ -395,13 +420,13 @@ CODESIGN_IDENTITY="Developer ID Application: ..." make dist
 - GIF 不包含音频，长录制的转换需要时间。
 - 发布包为 ad-hoc 签名；跨机器分发时 Gatekeeper 会提示，需要右键打开。
 - 无头模式的屏幕录制权限由宿主进程持有；不同终端/自动化环境可能需要在系统设置中单独授权。
-- 录制中隐藏悬浮条后，仍可通过菜单栏图标或快捷键控制。
+- 录制开始时，隐藏的悬浮条会自动显示；录制中再次隐藏后，仍可通过菜单栏图标或快捷键控制。
 
 ---
 
 ## 版本
 
-**1.0.0** — 首个正式版本：全屏/窗口/区域录制、系统音频与麦克风、暂停恢复、鼠标点击高亮、六种视频输出格式、七种界面语言、菜单栏与悬浮控制条、完整无头 CLI 与 LLM Skill。
+**1.1.0** — 新增录制区域/全屏边框与颜色选择、悬浮条透明度、五格灰色音量条、独立麦克风采集、全屏按钮、空闲 `00:00:00` 计时、毛玻璃控制条、一键发布脚本；修复麦克风音轨、音量显示与界面崩溃问题。
 
 ## License
 

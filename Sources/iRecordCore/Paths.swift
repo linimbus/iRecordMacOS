@@ -1,8 +1,8 @@
 import Foundation
 
 public enum AppInfo {
-    public static let version = "1.0.0"
-    public static let build = "1"
+    public static let version = "1.1.0"
+    public static let build = "2"
     public static let bundleIdentifier = "com.irecord.app"
     public static let displayName = "iRecord"
     public static let cliName = "irecord"

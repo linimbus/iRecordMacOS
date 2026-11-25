@@ -29,7 +29,7 @@ Key fields:
 {
   "ok": true,
   "ready": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "screenPermission": true,
   "microphonePermission": "authorized",
   "outputDirectory": "/Users/me/Movies/iRecord",

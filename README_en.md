@@ -1,8 +1,8 @@
 # iRecord · Minimal Native Screen Recorder for macOS
 
-> **v1.0.0** · Menu bar + floating control pill · Full screen / window / region · System audio & microphone · MP4 / MOV / ProRes / GIF · Headless CLI
+> **v1.1.0** · Menu bar + floating control pill · Full screen / window / region · System audio & microphone · MP4 / MOV / ProRes / GIF · Headless CLI
 
-[中文 README](README.md) · [Headless Skill](skill/irecord-headless/SKILL.md)
+[中文 README](README.md) · [Headless Skill](skill/irecord-headless/SKILL.md) · [GitHub project](https://github.com/linimbus/irecordmacos)
 
 iRecord is a lightweight screen recorder built entirely with Apple frameworks. It runs as a menu bar accessory with a compact floating controller at the bottom-right of the screen, with no Dock icon. Screen content and system audio are captured with ScreenCaptureKit, video is encoded with AVFoundation, and GIFs are produced with ImageIO. There are no third-party dependencies, no telemetry, and no network access.
 
@@ -28,6 +28,11 @@ iRecord is a lightweight screen recorder built entirely with Apple frameworks. I
 - **Mouse**
   - Show or hide the cursor
   - Optional **mouse click highlights**: the system draws a ring around every click and embeds it in the video
+- **Recording area border**
+  - Shows a border in the chosen color during full-screen or region recording
+  - Disappears immediately when recording stops
+  - Displayed on screen only and **never written to the recording**
+  - Color options: red, orange, yellow, green, blue, purple, white
 - **Multiple output formats**
   - MP4 · H.264 / HEVC
   - MOV · H.264 / HEVC / ProRes 422
@@ -60,6 +65,18 @@ Frosted-glass controller with a `00:00:00` timer, full-screen, window, region, a
 
 Timer, five-cell gray audio level bar, pause and stop. The volume bar is unaffected by the control opacity setting.
 
+### Recording area border
+
+![Recording area border](docs/screenshots/recording-border.png)
+
+The region border is visible on screen while recording, disappears on stop, and is not written into the video.
+
+### Full-screen recording border
+
+![Full-screen recording border](docs/screenshots/recording-border-full.png)
+
+Full-screen recordings show a border around the display; the color is selectable in Settings → General → Appearance.
+
 ### Menu bar
 
 ![Menu bar](docs/screenshots/menu-bar.png)
@@ -70,7 +87,13 @@ Menu bar icon and menu: start recording, new recording, output format, audio sou
 
 ![Settings](docs/screenshots/settings.png)
 
-Settings → General → Appearance, including floating-control opacity.
+Settings → General → Appearance, with floating-control opacity, recording border toggle, and border color.
+
+### About
+
+![About](docs/screenshots/about.png)
+
+Settings → About: version and the [GitHub project link](https://github.com/linimbus/irecordmacos).
 
 ---
 
@@ -87,7 +110,7 @@ Settings → General → Appearance, including floating-control opacity.
 
 ### Release package
 
-1. Open `dist/iRecord-1.0.0-macOS.dmg` and drag **iRecord.app** into Applications.
+1. Open `dist/iRecord-1.1.0-macOS.dmg` and drag **iRecord.app** into Applications.
 2. The release is ad-hoc signed, so on first launch either:
    - right-click iRecord.app in Finder → **Open**, or
    - run `xattr -dr com.apple.quarantine /Applications/iRecord.app`
@@ -130,6 +153,8 @@ Pick any of these:
 - Menu bar icon → **New Recording** → Full Screen / Window / Region
 - Press `⌥⌘R` to start or stop a full-screen recording
 
+If the floating pill is hidden, it appears automatically when recording starts and is hidden again when recording ends.
+
 ### While recording
 
 - The pill switches to elapsed time, pause/resume, and stop
@@ -171,7 +196,7 @@ Files are saved to `~/Movies/iRecord/` by default with names such as `iRecord-20
 
 The settings window is a fixed-size compact layout:
 
-- **General**: output folder, default format, frame rate, quality, floating pill, floating-pill opacity, launch at login, reveal in Finder, finish sound
+- **General**: output folder, default format, frame rate, quality, floating pill, floating-pill opacity, recording border and color, launch at login, reveal in Finder, finish sound
 - **Video**: format, scale (100% / 75% / 50%), frame rate, quality, GIF width/fps, cursor, mouse click highlights
 - **Audio**: off / system / microphone / both, with a shortcut to microphone permissions
 - **Shortcuts**: click a field and press a new combination; duplicate detection; reset to defaults
@@ -226,7 +251,7 @@ irecord stop   --session <id> --json     # waits for finalization/conversion
 | `irecord start [options]` | Start a background session and return a session id |
 | `irecord pause/resume/stop/status` | Control a background session |
 | `irecord config [--json]` | Show settings shared with the GUI |
-| `irecord version` | Print `iRecord 1.0.0` |
+| `irecord version` | Print `iRecord 1.1.0` |
 
 ### JSON output
 
@@ -331,8 +356,8 @@ Artifacts:
 
 - `dist/iRecord.app` — the app (CLI inside `Contents/Helpers/irecord`)
 - `dist/irecord` — standalone CLI
-- `dist/iRecord-1.0.0-macOS.zip` — portable archive
-- `dist/iRecord-1.0.0-macOS.dmg` — installer image (includes READMEs, LICENSE, the skill, an Applications shortcut, and a standalone `CLI/irecord`)
+- `dist/iRecord-1.1.0-macOS.zip` — portable archive
+- `dist/iRecord-1.1.0-macOS.dmg` — installer image (includes READMEs, LICENSE, the skill, an Applications shortcut, and a standalone `CLI/irecord`)
 - `dist/SHA256SUMS.txt` — checksums
 
 To sign/notarize with your own identity:
@@ -390,13 +415,13 @@ All implementation uses Apple frameworks:
 - GIF output is silent and conversion of long recordings takes time.
 - Release builds are ad-hoc signed; Gatekeeper prompts on other Macs and requires right-click → Open.
 - Headless Screen Recording permission is held by the host process; different terminals/automation hosts may need separate grants.
-- If you hide the floating pill while recording, the menu bar icon and shortcuts still work.
+- A hidden floating pill appears automatically when recording starts. If you hide it again during recording, the menu bar icon and shortcuts still work.
 
 ---
 
 ## Version
 
-**1.0.0** — first release: full-screen/window/region capture, system and microphone audio, pause/resume, mouse click highlights, six output formats, seven languages, menu bar and floating controls, full headless CLI, and an LLM skill.
+**1.1.0** — adds region/full-screen recording borders with color selection, floating-control opacity, a five-cell gray audio meter, independent microphone capture, a full-screen button, idle `00:00:00` timer, frosted-glass controls, and a one-click release script; fixes microphone audio, level display, and interface crashes.
 
 ## License
 
